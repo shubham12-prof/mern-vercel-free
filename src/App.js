@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Home from './components/Home';
+import SignIn from './components/Signin';
+import Courses from './components/Courses';
+import Header from './components/Header';
 
-function App() {
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Header isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signin" element={isAuthenticated ? <Navigate to="/courses" /> : <SignIn setIsAuthenticated={setIsAuthenticated} />} />
+        <Route path="/courses" element={isAuthenticated ? <Courses /> : <Navigate to="/signin" />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
